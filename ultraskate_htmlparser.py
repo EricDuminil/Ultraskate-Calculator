@@ -53,7 +53,8 @@ for one in entire_soup:
 
 # Removing the empty lap rows from the file and creating a new list race_data_final
 #
-# SELECT HERE NUMBER OF LAPS TO COUNT
+#     FOR TESTING PURPOSE ONLY
+#  SELECT HERE NUMBER OF LAPS TO COUNT
 # VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 #    VVVVVVVVVVVVVVVVVVVVVVV
 #          VVVVVVVVVVV
