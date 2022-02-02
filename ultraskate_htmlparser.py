@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import timedelta
-
+from flask import Flask, render_template
 
 # Miami previous mileages
 mileage_2019 = 262.8
@@ -165,3 +165,10 @@ print(f"Average speed to {mileage_2019:.1f} miles : {average_speed_to_goal(milea
       f"{remaining_lap_calc(180)} laps")
 print(f"Average speed to 300 miles : {average_speed_to_goal(300):.2f} km/h / "
       f"{remaining_lap_calc(206)} laps")
+
+
+app = Flask(__name__)
+
+@app.route("/")
+def index():
+    return render_template("index.html")
