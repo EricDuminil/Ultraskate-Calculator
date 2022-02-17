@@ -135,7 +135,8 @@ mile_per_second = average_speed_total[1]
 mile_projection = remaining_time * mile_per_second + total_miles
 
 
-output_list = [
+def calculate_output_list():
+    return [
             f"Position : {results[2]} / Laps : {results[1]}",
             f"Elapsed : {timedelta(seconds=total_elapsed_time)} / Remaning : {timedelta(seconds=remaining_time)}",
             f"Mileage : {total_miles:.2f} miles / {total_km:.2f} km",
@@ -153,17 +154,11 @@ output_list = [
             f"{remaining_lap_calc(206)} laps"
             ]
 
-
-for one in output_list:
-    print(one)
-print("\n")
-
 app = Flask(__name__)
-
 
 @app.route("/")
 def index():
-    return render_template("index.html", output_list=output_list, lap_list=lap_list)
+    return render_template("index.html", output_list=calculate_output_list(), lap_list=lap_list)
 
 
 if __name__ == "__main__":
