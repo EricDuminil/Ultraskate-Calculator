@@ -32,7 +32,6 @@ entire_soup = soup.find_all("td", class_="ltw-cell-padless")
 temp_list = []
 race_data = []
 race_data_final = []
-current_mileage_sum = []
 
 
 x = 0
