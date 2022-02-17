@@ -19,42 +19,42 @@ mia_mathieu_2019 = "http://jms.racetecresults.com/myresults.aspx?CId=16370&RId=3
 
 def download_data(url=mia_mathieu_2019):
     # Scraping the entire webpage date and assigning it to 'soup'
-    
+
     website = requests.get(mia_mathieu_2019)
     soup = BeautifulSoup(website.content, 'html.parser')
-    
+
     # Needed?
     #lap = soup.find_all(class_='ltw-cell-padless ltw-cell-left')
-    
-    
+
+
     # Variable entire_soup contains all the rows data
-    
+
     entire_soup = soup.find_all("td", class_="ltw-cell-padless")
-    
+
     temp_list = []
     race_data = []
     race_data_final = []
-    
+
     x = 0
-    
+
     for one in entire_soup:
-    
+
         if x < 5:
             # Each row having 5 columns, temp_list is copied to race_data until the 5th entry
             temp_list.append(one.text)
             x = x + 1
-    
+
         else:
             race_data.append(temp_list)
             temp_list = []
             temp_list.append(one.text)
             x = 1
-    
-    
+
+
     for one in race_data:
         if one[1] != "":
             race_data_final.append(one)
-            
+
     return race_data_final
 
 
@@ -110,11 +110,11 @@ def remaining_lap_calc(input_remaining, lap_count):
 
 def calculate_output_list():
     race_data_final = download_data()
-    
+
     total_miles, lap_count, position, total_elapsed_time, lap_list = ultra_calc(race_data_final)
     results_last5 = ultra_calc(race_data_final[-5:])
     results_last = ultra_calc(race_data_final[-1:])
-    
+
     remaining_time = total_ultra_time_sec - total_elapsed_time
 
     total_km = miles_to_km(total_miles)
@@ -131,7 +131,7 @@ def calculate_output_list():
 
     mile_per_second = average_speed_total[1]
     mile_projection = remaining_time * mile_per_second + total_miles
-    
+
     return [
             f"Position : {position} / Laps : {lap_count}",
             f"Elapsed : {timedelta(seconds=total_elapsed_time)} / Remaning : {timedelta(seconds=remaining_time)}",
