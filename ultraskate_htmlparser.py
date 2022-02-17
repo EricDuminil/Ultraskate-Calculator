@@ -20,6 +20,8 @@ mia_mathieu_2019 = "http://jms.racetecresults.com/myresults.aspx?CId=16370&RId=3
 def download_data(url=mia_mathieu_2019):
     # Scraping the entire webpage date and assigning it to 'soup'
 
+    print(f'!!! Downloading {url} !!!')
+
     website = requests.get(mia_mathieu_2019)
     soup = BeautifulSoup(website.content, 'html.parser')
 
@@ -80,8 +82,6 @@ def ultra_calc(input_list):
         current_mileage = lap_count * lap_distance
 
         lap_data = f"Lap {lap_count} in {speed:.2f} km/h / {current_mileage:.2f} miles"
-        print(single_lap)
-        print(lap_data)
 
         lap_list.append(lap_data)
         elapsed_time_list.append(laptime_second)
@@ -118,6 +118,8 @@ def calculate_output_list():
     remaining_time = total_ultra_time_sec - total_elapsed_time
 
     total_km = miles_to_km(total_miles)
+
+    print(f"{total_miles:.2f} miles.")
 
     total_miles_last5 = results_last5[0]
     total_elapsed_time_last5 = results_last5[3]
