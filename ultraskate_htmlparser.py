@@ -33,7 +33,6 @@ temp_list = []
 race_data = []
 race_data_final = []
 current_mileage_sum = []
-lap_list = []
 
 
 x = 0
@@ -60,6 +59,7 @@ for one in race_data:
 # Calculating the data
 
 def ultra_calc(input_list):
+    lap_list = []
     lap_count = 0
     elapsed_time_list = []
     for single_lap in input_list:
@@ -83,7 +83,7 @@ def ultra_calc(input_list):
         lap_list.append(lap_data)
         elapsed_time_list.append(laptime_second)
 
-    return current_mileage, lap_count, position, sum(elapsed_time_list)
+    return current_mileage, lap_count, position, sum(elapsed_time_list), lap_list
 
 
 total_ultra_time_sec = 24 * 60 * 60
@@ -158,7 +158,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return render_template("index.html", output_list=calculate_output_list(), lap_list=lap_list)
+    return render_template("index.html", output_list=calculate_output_list(), lap_list=results[4])
 
 
 if __name__ == "__main__":
