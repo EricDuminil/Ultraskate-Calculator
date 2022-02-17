@@ -33,6 +33,7 @@ temp_list = []
 race_data = []
 race_data_final = []
 current_mileage_sum = []
+lap_list = []
 
 
 x = 0
@@ -51,27 +52,9 @@ for one in entire_soup:
         x = 1
 
 
-# Removing the empty lap rows from the file and creating a new list race_data_final
-#
-#     FOR TESTING PURPOSE ONLY
-#  SELECT HERE NUMBER OF LAPS TO COUNT
-# VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
-#    VVVVVVVVVVVVVVVVVVVVVVV
-#          VVVVVVVVVVV
-#              VVV
-#               V
-
-laps_to_count = 34
-
-m = 0
 for one in race_data:
-    if one[1] != "" and m < laps_to_count:
+    if one[1] != "":
         race_data_final.append(one)
-    m = m + 1
-
-
-for one in race_data_final:
-    print(one)
 
 
 # Calculating the data
@@ -88,11 +71,16 @@ def ultra_calc(input_list):
         laptime_second = int(seconds) + (int(minutes) * 60) + (int(hours) * 3600)
 
         speed = (lap_distance / 0.62137119) / laptime_second * 3600
-        lap_count = lap_count + 1
+
+        lap_count += 1
+
         current_mileage = lap_count * lap_distance
 
-        print("Lap", lap_count, "in %.2f" % speed, "km/h /", "%.2f" % current_mileage, "miles")
+        lap_data = f"Lap {lap_count} in {speed:.2f} km/h / {current_mileage:.2f} miles"
+        print(single_lap)
+        print(lap_data)
 
+        lap_list.append(lap_data)
         elapsed_time_list.append(laptime_second)
 
     return current_mileage, lap_count, position, sum(elapsed_time_list)
@@ -105,7 +93,6 @@ results = ultra_calc(race_data_final)
 results_last5 = ultra_calc(race_data_final[-5:])
 
 results_last = ultra_calc(race_data_final[-1:])
-
 
 
 def miles_to_km(miles):
@@ -148,27 +135,36 @@ mile_per_second = average_speed_total[1]
 mile_projection = remaining_time * mile_per_second + total_miles
 
 
-print(f"\nPosition : {results[2]}")
-print(f"Number of laps : {results[1]}")
-print(f"Elapsed time : {timedelta(seconds=total_elapsed_time)}")
-print(f"Remaning time : {timedelta(seconds=remaining_time)}")
-print(f"Current mileage : {total_miles:.2f} miles / {total_km:.2f} km")
-print(f"Average speed : {average_speed_total[0]:.2f} km/h")
-print(f"Projection at current speed : {mile_projection:.2f} miles")
-print(f"Average speed on last lap: {average_speed_last[0]:.2f} km/h")
-print(f"Average speed on last 5 laps: {average_speed_last5[0]:.2f} km/h")
-print(f"Average speed to {mileage_2020:.1f} miles : {average_speed_to_goal(mileage_2020):.2f} km/h / "
-      f"{remaining_lap_calc(155)} laps")
-print(f"Average speed to 250 miles : {average_speed_to_goal(251.12):.2f} km/h / "
-      f"{remaining_lap_calc(172)} laps")
-print(f"Average speed to {mileage_2019:.1f} miles : {average_speed_to_goal(mileage_2019):.2f} km/h / "
-      f"{remaining_lap_calc(180)} laps")
-print(f"Average speed to 300 miles : {average_speed_to_goal(300):.2f} km/h / "
-      f"{remaining_lap_calc(206)} laps")
+output_list = [
+            f"Position : {results[2]} / Laps : {results[1]}",
+            f"Elapsed : {timedelta(seconds=total_elapsed_time)} / Remaning : {timedelta(seconds=remaining_time)}",
+            f"Mileage : {total_miles:.2f} miles / {total_km:.2f} km",
+            f"Average speed : {average_speed_total[0]:.2f} km/h",
+            f"Projection at current speed : {mile_projection:.2f} miles",
+            f"Average on last lap: {average_speed_last[0]:.2f} km/h",
+            f"Average on last 5 laps: {average_speed_last5[0]:.2f} km/h",
+            f"Average to {mileage_2020:.1f} miles : {average_speed_to_goal(mileage_2020):.2f} km/h / "
+            f"{remaining_lap_calc(155)} laps",
+            f"Average to 250 miles : {average_speed_to_goal(251.12):.2f} km/h / "
+            f"{remaining_lap_calc(172)} laps",
+            f"Average to {mileage_2019:.1f} miles : {average_speed_to_goal(mileage_2019):.2f} km/h / "
+            f"{remaining_lap_calc(180)} laps",
+            f"Average to 300 miles : {average_speed_to_goal(300):.2f} km/h / "
+            f"{remaining_lap_calc(206)} laps"
+            ]
 
+
+for one in output_list:
+    print(one)
+print("\n")
 
 app = Flask(__name__)
 
+
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", output_list=output_list, lap_list=lap_list)
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0")

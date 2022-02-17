@@ -14,9 +14,9 @@
     {% for one in output_list %}
     <p>{{ one }}</p>
     {% endfor %}
-	<br>
+	
 	{% for one in lap_list %}
-    <pre>{{ one }}</pre>
+    <p>{{ one }}</p>
     {% endfor %}
 
 
