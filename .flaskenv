@@ -1,0 +1,2 @@
+FLASK_APP=UltraApp
+FLASK_ENV=development
