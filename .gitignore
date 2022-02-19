@@ -1,2 +1,3 @@
 *.pyc
+dev_cache.sqlite
 __pycache__/

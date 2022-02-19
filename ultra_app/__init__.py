@@ -1,7 +1,14 @@
-import requests
-from bs4 import BeautifulSoup
-from datetime import timedelta
 from flask import Flask, render_template
+import requests
+import requests_cache
+import json
+from datetime import timedelta
+
+requests_cache.install_cache('dev_cache', expire_after=timedelta(days=1))
+
+EVENT_ID = '192607'
+RIDER_NAME = 'Mathieu'
+BASE_URL = "https://my.raceresult.com/RRPublish/data"
 
 # Miami previous mileages
 mileage_2019 = 262.8
@@ -12,55 +19,62 @@ lap_distance = 1.46
 
 total_ultra_time_sec = 24 * 60 * 60
 
-# Webpages to scrape
-mia_mathieu_2020 = "http://jms.racetecresults.com/myresults.aspx?uid=16370-400-1-423957"
-mia_mathieu_2019 = "http://jms.racetecresults.com/myresults.aspx?CId=16370&RId=352&EId=1&AId=141108"
+################ RaceResults ##################
 
+def get_json_data(url):
+    print(f"### Downloading {url}")
+    r = requests.get(url)
+    return json.loads(r.content)
 
-def download_data(url=mia_mathieu_2019):
-    # Scraping the entire webpage date and assigning it to 'soup'
+def get_key(event_id=EVENT_ID):
+    url = f"{BASE_URL}/config.php?eventid={event_id}&page=live&noVisitor=1"
+    return get_json_data(url)['key']
 
-    print(f'!!! Downloading {url} !!!')
+def rider_dict(rider_id, position, _id, name, _team, laps, miles, time, diff):
+    return {
+            'id': int(rider_id),
+            'name': name,
+            'position': int(position.replace('.', '').replace('na','999')),
+            'laps': int(laps),
+            'time': time
+        }
 
-    website = requests.get(mia_mathieu_2019)
-    soup = BeautifulSoup(website.content, 'html.parser')
+def get_all_riders(event_id=EVENT_ID):
+    key = get_key(event_id)
+    url = f"{BASE_URL}/list.php?eventid={event_id}&key={key}&listname=Result+Lists%7COverall+Results+-+Live&page=live&contest=0&r=leaders&l=100"
+    table = get_json_data(url)['data']
+    categories = [cat for team_or_not in table.values() for cat in team_or_not.values()]
+    riders = [rider for riders in categories for rider in riders]
+    return [rider_dict(*r) for r in riders if len(r) > 1]
 
-    # Needed?
-    #lap = soup.find_all(class_='ltw-cell-padless ltw-cell-left')
+def find_rider(name, event_id=EVENT_ID):
+    riders = get_all_riders(event_id)
+    return next(r for r in riders if name in r['name'])
 
+def get_laps(rider, event_id=EVENT_ID):
+    key = get_key(event_id)
+    url = f"{BASE_URL}/list.php?eventid={event_id}&key={key}&listname=Online%7CLap+Details&page=live&contest=0&r=bib2&bib={rider['id']}"
+    return get_json_data(url)['data']
 
-    # Variable entire_soup contains all the rows data
+def fill_hours(time):
+    if time.count(':') == 1:
+        return '0:' + time
+    else:
+        return time
 
-    entire_soup = soup.find_all("td", class_="ltw-cell-padless")
+def convert_to_racetec_format(rider):
+    table = get_laps(rider)
+    result = []
+    for row in table:
+        _id, lap, total_time, time = row
+        result.append([f'Lap {lap}',
+                       fill_hours(total_time),
+                       fill_hours(time),
+                       rider['position'],
+                       rider['position']])
+    return result
 
-    temp_list = []
-    race_data = []
-    race_data_final = []
-
-    x = 0
-
-    for one in entire_soup:
-
-        if x < 5:
-            # Each row having 5 columns, temp_list is copied to race_data until the 5th entry
-            temp_list.append(one.text)
-            x = x + 1
-
-        else:
-            race_data.append(temp_list)
-            temp_list = []
-            temp_list.append(one.text)
-            x = 1
-
-
-    for one in race_data:
-        if one[1] != "":
-            race_data_final.append(one)
-
-    return race_data_final
-
-
-
+#################################################
 # Calculating the data
 
 def ultra_calc(input_list):
@@ -73,7 +87,7 @@ def ultra_calc(input_list):
 
         position = single_lap[4]
 
-        laptime_second = int(seconds) + (int(minutes) * 60) + (int(hours) * 3600)
+        laptime_second = round(float(seconds)) + (int(minutes) * 60) + (int(hours) * 3600)
 
         speed = (lap_distance / 0.62137119) / laptime_second * 3600
 
@@ -109,7 +123,8 @@ def remaining_lap_calc(input_remaining, lap_count):
 
 
 def calculate_output_list():
-    race_data_final = download_data()
+    rider = find_rider(RIDER_NAME)
+    race_data_final = convert_to_racetec_format(rider)
 
     total_miles, lap_count, position, total_elapsed_time, lap_list = ultra_calc(race_data_final)
     results_last5 = ultra_calc(race_data_final[-5:])
