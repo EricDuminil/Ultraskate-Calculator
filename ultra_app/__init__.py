@@ -171,10 +171,13 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    output_list, lap_list = calculate_output_list()
-    return render_template("index.html",
-                           output_list=output_list,
-                           lap_list=lap_list[::-1])
+    try:
+        output_list, lap_list = calculate_output_list()
+        return render_template("index.html",
+                               output_list=output_list,
+                               lap_list=lap_list[::-1])
+    except StopIteration:
+        return "Live data not yet available."
 
 
 if __name__ == "__main__":
