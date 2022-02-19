@@ -4,7 +4,7 @@ import requests_cache
 import json
 from datetime import timedelta
 
-requests_cache.install_cache('dev_cache', expire_after=timedelta(days=1))
+requests_cache.install_cache('dev_cache', expire_after=300, use_temp=True) # 5 minutes cache
 
 EVENT_ID = '192607'
 RIDER_NAME = 'Mathieu'
