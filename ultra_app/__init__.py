@@ -4,7 +4,11 @@ import requests_cache
 import json
 from datetime import timedelta
 
-requests_cache.install_cache('dev_cache', expire_after=60, use_temp=True) # [s]
+requests_cache.install_cache('prod_cache',
+                             expire_after=60, # [s]
+                             cache_control=True,
+                             stale_if_error=False,
+                             use_temp=True)
 
 EVENT_ID = '192607'
 RIDER_NAME = 'Mathieu'
