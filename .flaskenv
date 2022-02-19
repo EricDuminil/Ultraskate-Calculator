@@ -1,2 +1,3 @@
-FLASK_APP=UltraApp
+FLASK_APP=ultra_app
 FLASK_ENV=development
+FLASK_RUN_PORT=8000
