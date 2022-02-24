@@ -86,8 +86,9 @@ for id, (laps, time, miles) in get_live_results().items():
     # df.loc[id]['time'] = time
     # df.loc[id]['miles'] = miles
 
-pd.set_option("display.max_rows", None, "display.max_columns", None)
+#pd.set_option("display.max_rows", None, "display.max_columns", None)
 print(df)
+df.to_excel('miami_ultraskate_2022.xlsx')
 
 
 
