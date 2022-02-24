@@ -9,6 +9,31 @@ import requests
 import requests_cache
 import json
 from datetime import timedelta
+from pprint import pprint
+
+from dataclasses import dataclass
+
+@dataclass
+class Rider:
+    id: int
+    _id: int
+    _chip: int
+    name: str
+    team: str
+    clydesdale: bool
+    age: str
+    discipline: str
+    division: str
+
+#                  ['77',
+#                   '77',
+#                   '527',
+#                   'Bon, Mathieu',
+#                   '',
+#                   '',
+#                   '30-39',
+#                   'Skateboard Push',
+#                   'Open'],
 
 requests_cache.install_cache('dev_cache', expire_after=timedelta(days=1))
 
@@ -60,9 +85,22 @@ def convert_to_racetec_format(rider):
         result.append([f'Lap {lap}', total_time, time, rider['position'], rider['position']])
     return result
 
-rider = find_rider(RIDER_NAME)
-laps = get_laps(rider)
-r = convert_to_racetec_format(rider)
+
+def get_participants(event_id=EVENT_ID):
+    key = get_key(event_id)
+    url = f"{BASE_URL}/list.php?eventid={event_id}&key={key}&listname=Participants%7CParticipants+List+123&page=participants&contest=0&r=all&l=0"
+    return get_json_data(url)['data']
+
+#rider = find_rider(RIDER_NAME)
+#laps = get_laps(rider)
+riders = []
+for team_or_not, rs in get_participants().items():
+    for rider in rs:
+        print(rider)
+        riders.append(Rider(*rider))
+
+print(len(riders))
+
 
 
 
