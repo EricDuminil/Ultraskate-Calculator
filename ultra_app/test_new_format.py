@@ -16,24 +16,15 @@ from dataclasses import dataclass
 @dataclass
 class Rider:
     id: int
-    _id: int
-    _chip: int
     name: str
     team: str
     clydesdale: bool
     age: str
     discipline: str
     division: str
-
-#                  ['77',
-#                   '77',
-#                   '527',
-#                   'Bon, Mathieu',
-#                   '',
-#                   '',
-#                   '30-39',
-#                   'Skateboard Push',
-#                   'Open'],
+    lap: int = 0
+    miles: float = 0
+    kilometers: float = 0
 
 requests_cache.install_cache('dev_cache', expire_after=timedelta(days=1))
 
@@ -94,12 +85,15 @@ def get_participants(event_id=EVENT_ID):
 #rider = find_rider(RIDER_NAME)
 #laps = get_laps(rider)
 riders = []
-for team_or_not, rs in get_participants().items():
-    for rider in rs:
-        print(rider)
-        riders.append(Rider(*rider))
-
-print(len(riders))
+for team_or_not, table in get_participants().items():
+    for row in table:
+        id, _id, _chip, name, team, clydesdale, age, discipline, division = row
+        riders.append(Rider(int(id), name, team, clydesdale == 'Yes', age, discipline, division))
+import pandas as pd
+df = pd.DataFrame(riders)
+df = df.set_index('id')
+df = df.sort_index()
+print(df)
 
 
 
