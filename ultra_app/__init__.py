@@ -35,32 +35,22 @@ def get_data_from_csv(rider):
 
 def ultra_calc(input_list):
     lap_list = []
-    lap_count = 0
-    elapsed_time_list = []
-    # for single_lap in input_list:
+    last_lap, last_time, _, _, _ = input_list[0]
 
-        # hours, minutes, seconds = single_lap[2].split(':')
+    for single_lap in input_list[1:]:
+        current_lap, current_time, current_distance, _, _ = single_lap
+        laptime = current_time - last_time
+        speed = (current_lap - last_lap) * lap_distance * 1.609 / laptime
+        lap_data = f"Lap {current_lap} in {speed:.2f} km/h / {current_distance:.2f} miles"
+        lap_list.append(lap_data)
+        last_lap, last_time = current_lap, current_time
 
-        # position = single_lap[4]
-
-        # laptime_second = round(float(seconds)) + (int(minutes) * 60) + (int(hours) * 3600)
-
-        # speed = (lap_distance / 0.62137119) / laptime_second * 3600
-
-        # lap_count += 1
-
-        # current_mileage = lap_count * lap_distance
-
-        # lap_data = f"Lap {lap_count} in {speed:.2f} km/h / {current_mileage:.2f} miles"
-
-        # lap_list.append(lap_data)
-        # elapsed_time_list.append(laptime_second)
 
     start_lap, start_time, _, _, _ = input_list[0]
     end_lap, end_time, _, _, _ = input_list[-1]
     lap_count = end_lap - start_lap
     time = (end_time - start_time) * 3600
-    return lap_count * lap_distance, lap_count, '?', time, []
+    return lap_count * lap_distance, lap_count, '?', time, lap_list
 
 
 def miles_to_km(miles):
