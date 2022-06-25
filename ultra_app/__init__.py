@@ -19,7 +19,7 @@ total_ultra_time_sec = 24 * 60 * 60
 ################ From CSV ##################
 
 def get_data_from_csv(rider):
-    with open(f"../ultra_graph/data/dutch_ultra_2022/{rider.lower()}.csv") as f:
+    with open(f"/home/ricou/www/ultra_graph/data/dutch_ultra_2022/{rider.lower()}.csv") as f:
         table = []
         for line in f:
             time, distance = [float(x) for x in line.split()]
@@ -28,21 +28,7 @@ def get_data_from_csv(rider):
             row = (lap, time, distance, position, position)
             if (not table) or table[-1][0] != row[0]:
                 table.append(row)
-        pprint(table)
         return table
-
-def convert_to_racetec_format(rider):
-    table = get_laps(rider)
-    pprint(table)
-    result = []
-    for row in table:
-        _id, lap, total_time, time = row
-        result.append([lap,
-                       fill_hours(total_time),
-                       fill_hours(time),
-                       rider['position'],
-                       rider['position']])
-    return result
 
 #################################################
 # Calculating the data
