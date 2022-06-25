@@ -1,7 +1,6 @@
 from flask import Flask, render_template
 import json
 from datetime import timedelta
-from pprint import pprint
 from math import ceil
 
 RIDER_NAME = 'Mathieu_Bon'
@@ -85,7 +84,7 @@ def calculate_output_list():
 
     total_km = miles_to_km(total_miles)
 
-    print(f"{total_miles:.2f} miles.")
+    #print(f"{total_miles:.2f} miles.")
 
     total_miles_last5 = results_last5[0]
     total_elapsed_time_last5 = results_last5[3]
