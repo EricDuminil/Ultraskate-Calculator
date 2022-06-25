@@ -101,7 +101,7 @@ def calculate_output_list():
     mile_projection = remaining_time * mile_per_second + total_miles
 
     return [
-            f"Position : {position} / Laps : {lap_count}",
+            f"Laps : {lap_count}",
             f"Elapsed : {timedelta(seconds=total_elapsed_time)} / Remaning : {timedelta(seconds=remaining_time)}",
             f"Mileage : {total_miles:.2f} miles / {total_km:.2f} km",
             f"Average speed : {average_speed_total[0]:.2f} km/h",
