@@ -1,6 +1,7 @@
 from flask import Flask, render_template
 import json
 from datetime import timedelta
+from pprint import pprint
 from math import ceil
 
 RIDER_NAME = 'Mathieu_Bon'
@@ -23,8 +24,7 @@ def get_data_from_csv(rider):
         for line in f:
             time, distance = [float(x) for x in line.split()]
             lap = int(round(distance / lap_distance))
-            position = '?'
-            row = (lap, time, distance, position, position)
+            row = (lap, time, distance)
             if (not table) or table[-1][0] != row[0]:
                 table.append(row)
         return table
@@ -34,10 +34,10 @@ def get_data_from_csv(rider):
 
 def ultra_calc(input_list):
     lap_list = []
-    last_lap, last_time, _, _, _ = input_list[0]
+    last_lap, last_time, _ = input_list[0]
 
     for single_lap in input_list[1:]:
-        current_lap, current_time, current_distance, _, _ = single_lap
+        current_lap, current_time, current_distance = single_lap
         laptime = current_time - last_time
         speed = (current_lap - last_lap) * lap_distance * 1.609 / laptime
         lap_data = f"Lap {current_lap} in {speed:.2f} km/h / {current_distance:.2f} miles"
@@ -45,11 +45,11 @@ def ultra_calc(input_list):
         last_lap, last_time = current_lap, current_time
 
 
-    start_lap, start_time, _, _, _ = input_list[0]
-    end_lap, end_time, _, _, _ = input_list[-1]
+    start_lap, start_time, _ = input_list[0]
+    end_lap, end_time, _ = input_list[-1]
     lap_count = end_lap - start_lap
     time = (end_time - start_time) * 3600
-    return lap_count * lap_distance, lap_count, '?', time, lap_list
+    return lap_count * lap_distance, lap_count, time, lap_list
 
 
 def miles_to_km(miles):
@@ -76,21 +76,27 @@ def remaining_lap_calc(mileage_goal, lap_count):
 def calculate_output_list():
     race_data_final = get_data_from_csv(RIDER_NAME)
 
-    total_miles, lap_count, position, total_elapsed_time, lap_list = ultra_calc(race_data_final)
+    total_miles, lap_count, total_elapsed_time, lap_list = ultra_calc(race_data_final)
     results_last5 = ultra_calc(race_data_final[-6:])
     results_last = ultra_calc(race_data_final[-2:])
+
+
+    with open(f"/home/ricou/www/ultra_graph/data/dutch_ultra_2022/positions.json") as f:
+        positions = json.load(f)
+
+    position = positions[RIDER_NAME.lower()]
 
     remaining_time = total_ultra_time_sec - total_elapsed_time
 
     total_km = miles_to_km(total_miles)
 
-    #print(f"{total_miles:.2f} miles.")
+    print(f"{total_miles:.2f} miles.")
 
     total_miles_last5 = results_last5[0]
-    total_elapsed_time_last5 = results_last5[3]
+    total_elapsed_time_last5 = results_last5[2]
 
     total_miles_last = results_last[0]
-    total_elapsed_time_last = results_last[3]
+    total_elapsed_time_last = results_last[2]
 
     average_speed_total = average_speed(total_miles, total_elapsed_time)
     average_speed_last5 = average_speed(total_miles_last5, total_elapsed_time_last5)
@@ -100,7 +106,7 @@ def calculate_output_list():
     mile_projection = remaining_time * mile_per_second + total_miles
 
     return [
-            f"Laps : {lap_count}",
+            f"Position : {position} / Laps : {lap_count}",
             f"Elapsed : {timedelta(seconds=total_elapsed_time)} / Remaning : {timedelta(seconds=remaining_time)}",
             f"Mileage : {total_miles:.2f} miles / {total_km:.2f} km",
             f"Average speed : {average_speed_total[0]:.2f} km/h",
