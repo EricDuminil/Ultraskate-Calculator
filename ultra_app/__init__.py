@@ -10,7 +10,9 @@ requests_cache.install_cache('prod_cache',
                              stale_if_error=False,
                              use_temp=True)
 
+# EVENT_ID = '204047' # For Miami 2023
 EVENT_ID = '192607'
+EVENT_NAME = 'Miami Ultraskate 2022'
 RIDER_NAME = 'Mathieu'
 BASE_URL = "https://my.raceresult.com"
 
@@ -179,7 +181,10 @@ def index():
         output_list, lap_list = calculate_output_list()
         return render_template("index.html",
                                output_list=output_list,
-                               lap_list=lap_list[::-1])
+                               lap_list=lap_list[::-1],
+                               event_name=EVENT_NAME,
+                               rider_name=RIDER_NAME
+                               )
     except StopIteration:
         return "Live data not yet available."
 
