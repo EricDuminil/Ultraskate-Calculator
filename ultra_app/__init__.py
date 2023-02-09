@@ -12,7 +12,7 @@ requests_cache.install_cache('prod_cache',
 
 EVENT_ID = '192607'
 RIDER_NAME = 'Mathieu'
-BASE_URL = "https://my.raceresult.com/RRPublish/data"
+BASE_URL = "https://my.raceresult.com"
 
 # Miami previous mileages
 mileage_2019 = 262.8
@@ -31,7 +31,7 @@ def get_json_data(url):
     return json.loads(r.content)
 
 def get_key(event_id=EVENT_ID):
-    url = f"{BASE_URL}/config.php?eventid={event_id}&page=live&noVisitor=1"
+    url = f"{BASE_URL}/{event_id}/RRPublish/data/config?page=participants&noVisitor=1"
     return get_json_data(url)['key']
 
 def rider_dict(rider_id, position, _id, name, _team, laps, miles, time, diff):
@@ -45,7 +45,7 @@ def rider_dict(rider_id, position, _id, name, _team, laps, miles, time, diff):
 
 def get_all_riders(event_id=EVENT_ID):
     key = get_key(event_id)
-    url = f"{BASE_URL}/list.php?eventid={event_id}&key={key}&listname=Result+Lists%7COverall+Results+-+Live&page=live&contest=0&r=leaders&l=100"
+    url = f"{BASE_URL}/{event_id}/RRPublish/data/list?key={key}&listname=Result%20Lists%7COverall%20Results%20-%20Live&page=live&contest=0&r=leaders&l=100"
     table = get_json_data(url)['data']
     categories = [cat for team_or_not in table.values() for cat in team_or_not.values()]
     riders = [rider for riders in categories for rider in riders]
@@ -57,7 +57,7 @@ def find_rider(name, event_id=EVENT_ID):
 
 def get_laps(rider, event_id=EVENT_ID):
     key = get_key(event_id)
-    url = f"{BASE_URL}/list.php?eventid={event_id}&key={key}&listname=Online%7CLap+Details&page=live&contest=0&r=bib2&bib={rider['id']}"
+    url = f"{BASE_URL}/{event_id}/RRPublish/data/list?key={key}&listname=Online%7CLap%20Details&page=live&contest=0&r=bib2&bib={rider['id']}"
     return get_json_data(url)['data']
 
 def fill_hours(time):
