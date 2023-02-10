@@ -17,6 +17,7 @@ RIDER_NAME = 'Mathieu'
 BASE_URL = "https://my.raceresult.com"
 
 # Miami previous mileages
+mileage_2018 = 289.7
 mileage_2019 = 262.8
 mileage_2020 = 226.3
 
@@ -169,6 +170,8 @@ def calculate_output_list():
             f"{remaining_lap_calc(172, lap_count)} laps",
             f"Average to {mileage_2019:.1f} miles : {average_speed_to_goal(mileage_2019, total_km, remaining_time):.2f} km/h / "
             f"{remaining_lap_calc(180, lap_count)} laps",
+            f"Average to {mileage_2018:.1f} miles : {average_speed_to_goal(mileage_2018, total_km, remaining_time):.2f} km/h / "
+            f"{remaining_lap_calc(199, lap_count)} laps",
             f"Average to 300 miles : {average_speed_to_goal(300, total_km, remaining_time):.2f} km/h / "
             f"{remaining_lap_calc(206, lap_count)} laps"
             ], lap_list
