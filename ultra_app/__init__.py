@@ -10,9 +10,9 @@ requests_cache.install_cache('prod_cache',
                              stale_if_error=False,
                              use_temp=True)
 
-# EVENT_ID = '204047' # For Miami 2023
-EVENT_ID = '192607'
-EVENT_NAME = 'Miami Ultraskate 2022'
+EVENT_ID = '204047' # For Miami 2023
+#EVENT_ID = '192607'
+EVENT_NAME = 'Miami Ultraskate 2023'
 RIDER_NAME = 'Mathieu'
 BASE_URL = "https://my.raceresult.com"
 
