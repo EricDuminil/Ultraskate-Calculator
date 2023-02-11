@@ -233,7 +233,7 @@ def categories():
     df.clydesdale = df.clydesdale == 'Yes'
     df3 = df.merge(df2, on='id', how='left')
     df3 = df3.set_index('id')
-    df3 = df3.sort_values(['position', 'laps'], ascending=[True, False])
+    df3 = df3.sort_values(['laps'], ascending=[False])
     df3.nation = df3.nation.str.replace('\[img:flags\/', '').str.replace('.gif]', '')
     return df3.to_html()
 
