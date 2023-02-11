@@ -225,12 +225,17 @@ def categories():
                       'age', 'discipline', 'gender', 'clydesdale', 'nation'])
 
     df = df[['id', 'name', 'age', 'discipline', 'gender', 'clydesdale', 'nation']]
-    df = df.set_index('id')
-    df2 = df2.set_index('id')
-    print(df2)
-
-    print(df)
-    return repr(df)
+    df['id'] = df['id'].astype(int)
+    df2 = df2.drop(columns=['name'])
+    df2.position = df2['position'].astype("Int16")
+    df2.laps = df2['laps'].astype("Int16")
+    df2['miles'] = df2.laps * 1.46
+    df.clydesdale = df.clydesdale == 'Yes'
+    df3 = df.merge(df2, on='id', how='left')
+    df3 = df3.set_index('id')
+    df3 = df3.sort_values(['position', 'laps'], ascending=[True, False])
+    df3.nation = df3.nation.str.replace('\[img:flags\/', '').str.replace('.gif]', '')
+    return df3.to_html()
 
 
 if __name__ == "__main__":
